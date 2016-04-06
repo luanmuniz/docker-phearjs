@@ -1,0 +1,32 @@
+[
+  {
+    "development": {
+      "workers": 4,
+      "base_port": 8100,
+      "cache_ttl": 604800,
+      "global_timeout": 40000,
+      "status_page": {
+        "enabled": false,
+        "name": "user",
+        "pass": "pick_a_password"
+      },
+      "memcached": {
+        "servers": ["192.168.99.100:32768"],
+        "options": {
+          "retries": 0,
+          "timeout": 500
+        }
+      },
+      "worker": {
+        "port": 8183,
+        "timeout": 10000,
+        "parse_delay": 5000,
+        "user_agent": "PhearBot/0.4.1 - http://phear.io",
+        "max_connections": 10,
+        "allowed_clients": ["127.0.0.1"],
+        "get_requests": false,
+        "get_cookies": false
+      }
+    }
+  }
+]

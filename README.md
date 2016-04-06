@@ -1,2 +1,2 @@
 # docker-phearjs
-Just a Docker implemtation for PhearJs
+Just a Docker implementation for PhearJs
