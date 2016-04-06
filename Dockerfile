@@ -2,22 +2,24 @@ FROM debian:wheezy
 MAINTAINER luan@luanmuniz.com.br
 
 ENV NOVE_ENV production
+ENV DEBIAN_FRONTEND noninteractive
+
 ENV NVM_VERSION v0.31.0
 ENV NODE_VERSION v4.4.2
 ENV PHANTOMJS_VERSION 2.1.1
 ENV PHEARJS_VERSION 0.5.0
 
-ENV NODE_DEPENDENCES g++ gcc make python ca-certificates wget git apt-utils
+ENV NODE_DEPENDENCES g++ gcc make python ca-certificates curl git apt-utils
 ENV PHANTOMJS_DEPENDENCES bzip2 libfontconfig1-dev libssl-dev
 ENV PHEARJS_DEPENDENCES procps
 
 # Normalize Bash
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
-# Install Nodejs Dependences
+# Install Dependences
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y $NODE_DEPENDENCES --no-install-recommends
+    && apt-get install -y $NODE_DEPENDENCES $PHANTOMJS_DEPENDENCES $PHEARJS_DEPENDENCES --no-install-recommends
 
 # Install Nodejs
 RUN git clone -b $NVM_VERSION https://github.com/creationix/nvm.git /opt/nvm
@@ -34,11 +36,8 @@ RUN ln -s /opt/nvm/versions/node/$NODE_VERSION/bin/node /usr/bin/node \
 RUN npm install -g node-gyp nan \
     && npm update
 
-# Install PhantomJS & PhearJS Dependences
-RUN apt-get install -y $PHANTOMJS_DEPENDENCES $PHEARJS_DEPENDENCES --no-install-recommends
-
 # Install PhantomJS
-RUN wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 -O /opt/phantomjs.tar.bz2
+RUN curl -L https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 --output /opt/phantomjs.tar.bz2
 RUN tar -xf /opt/phantomjs.tar.bz2 -C /opt
 RUN rm -rf /opt/phantomjs.tar.bz2
 RUN ln -s /opt/phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/bin/phantomjs
@@ -50,7 +49,6 @@ RUN npm install
 
 # Add Phearjs Config
 ADD . /opt/src/
-RUN echo "exit 0" > /usr/sbin/policy-rc.d
 
 # Clean Installation
 RUN rm -rf /tmp/* \
